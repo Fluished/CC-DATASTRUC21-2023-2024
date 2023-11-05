@@ -95,13 +95,50 @@ class Conversion {
         return operands.peek();
     }
 
+    public int evalValue(String expression) {
+        Stack<Integer> result = new Stack<>();
+        char c;
+
+        for (int i = 0; i < expression.length(); i++) {
+            c = expression.charAt(i);
+
+            if (Character.isDigit(c)) {
+                int toInt = (int) (c - '0');
+
+                result.push(toInt);
+            } else {
+                int operand1 = result.pop();
+                int operand2 = result.pop();
+
+                switch (c) {
+                    case '+':
+                        result.push(operand2 + operand1);
+                        break;
+                    case '-':
+                        result.push(operand2 - operand1);
+                        break;
+                    case '*':
+                        result.push(operand2 * operand1);
+                        break;
+                    case '/':
+                        try {
+                            result.push(operand2 / operand1);
+                        } catch (Exception e) {
+                            System.out.println("Cannot divide by 0!");
+                        }
+                        break;
+                }
+            }
+        }
+
+        return result.peek();
+    }
+
     public static int checkPrecedence(char c) {
         if (c == '+' || c == '-')
             return 1;
         if (c == '*' || c == '/' || c == '%')
             return 2;
-        if (c == '^')
-            return 3;
         return 0;
     }
 
@@ -132,11 +169,24 @@ class InfixConversion {
 
             System.out.println("Postfix: " + convert.getPostfix(infix));
             System.out.println("Prefix: " + convert.getPrefix(infix));
+            checkInfix(infix);
         } else {
             System.out.println("Missing Parenthesis!");
         }
 
         scan.close();
+    }
+
+    private static void checkInfix(String infix) {
+        Conversion convert = new Conversion(infix);
+
+        try {
+            String postfix = convert.getPostfix(infix);
+
+            System.out.println("Evaluated value: " + convert.evalValue(postfix));
+        } catch (Exception e) {
+            System.out.println("Evaluated value: Cannot evaluate!");
+        }
     }
 
     private static boolean checkParenthesis(String infix) {
