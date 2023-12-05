@@ -18,14 +18,10 @@ class Conversion {
             StringBuilder multiDigit = new StringBuilder();
             char c = infix.charAt(i);
 
-            if (Character.isDigit(c) || c == '-') {
-                while (i < infix.length() && infix.charAt(i) == '-' || Character.isDigit(infix.charAt(i))) {
+            if (Character.isDigit(c)) {
+                while (i < infix.length() && Character.isDigit(infix.charAt(i))) {
                     multiDigit.append(infix.charAt(i));
                     i++;
-
-                    if (i == infix.length()) {
-                        break;
-                    }
                 }
                 result.append(multiDigit).append(" ");
                 i--;
@@ -37,7 +33,19 @@ class Conversion {
                 }
                 operator.pop();
             } else {
-                if (operator.isEmpty() || operator.peek() == '(') {
+                if (c == '-' && Character.isDigit(infix.charAt(i + 1))) {
+                    multiDigit.append(c);
+                    i++;
+                    while (i < infix.length() && Character.isDigit(infix.charAt(i))) {
+                        multiDigit.append(infix.charAt(i));
+                        i++;
+                        if (i == infix.length()) {
+                            break;
+                        }
+                    }
+                    result.append(multiDigit).append(" ");
+                    i--;
+                } else if (operator.isEmpty() || operator.peek() == '(') {
                     operator.push(c);
                 } else {
                     while (!operator.isEmpty() && checkPrecedence(c) <= checkPrecedence(operator.peek())) {
@@ -57,13 +65,11 @@ class Conversion {
 
     public double evalValue(String expression) {
         Stack<String> operands = new Stack<>();
-        ArrayList<String> solution = new ArrayList<>();
-        ArrayList<String> operand = new ArrayList<>();
         String[] operators = expression.split(" ");
         double value = 0;
+        int ctr = 1;
 
         for (int i = 0; i < operators.length; i++) {
-            solution.add(operators[i]);
             if (isOperator(operators[i]) == true) {
                 double operand2 = Double.parseDouble(operands.pop());
                 double operand1 = Double.parseDouble(operands.pop());
@@ -71,39 +77,43 @@ class Conversion {
                 switch (operators[i]) {
                     case "+":
                         value = operand1 + operand2;
-                        System.out.println(operand1 + " + " + operand2);
+                        System.out.println(ctr + ".) " + operand1 + " + " + operand2);
+                        ctr++;
                         break;
                     case "-":
                         value = operand1 - operand2;
-                        System.out.println(operand1 + " - " + operand2);
+                        System.out.println(ctr + ".) " + operand1 + " - " + operand2);
+                        ctr++;
                         break;
                     case "*":
                         value = operand1 * operand2;
-                        System.out.println(operand1 + " * " + operand2);
+                        System.out.println(ctr + ".) " + operand1 + " * " + operand2);
+                        ctr++;
                         break;
                     case "/":
                         try {
                             value = operand1 / operand2;
-                            System.out.println(operand1 + " / " + operand2);
+                            System.out.println(ctr + ".) " + operand1 + " / " + operand2);
+                            ctr++;
                         } catch (Exception e) {
                             System.out.println("Cannot divide by 0!");
                         }
                         break;
                     case "%":
                         value = operand1 % operand2;
-                        System.out.println(operand1 + " % " + operand2);
+                        System.out.println(ctr + ".) " + operand1 + " % " + operand2);
+                        ctr++;
                         break;
                     case "^":
                         value = Math.pow(operand1, operand2);
-                        System.out.println(operand1 + " ^ " + operand2);
+                        System.out.println(ctr + ".) " + operand1 + " ^ " + operand2);
+                        ctr++;
                         break;
                 }
                 operands.push(String.valueOf(value));
             } else {
                 operands.push(operators[i]);
-                operand.add(operators[i]);
             }
-            // System.out.println(i + " " + solution.toString());
         }
 
         return value;
@@ -137,6 +147,10 @@ class InfixConversion {
         // (2 - 4 / 4 ) * (8 / 2 - 3)
         // (6 - 4 + 2) / 1 * (10/5+(4*1))
 
+        // String infix = "(-5+-1)*1";
+        // System.out.printf("Enter equation: %s\n", infix);
+
+        System.out.println("Please use \"-1 + -1\" or \"-1 - -1\" fornegativeintegers");
         System.out.print("Enter equation: ");
         String infix = scan.nextLine();
 
@@ -144,9 +158,10 @@ class InfixConversion {
 
         if (checkParenthesis(infix) == true) {
             Conversion convert = new Conversion(infix);
+            String result = convert.getPostfix();
 
-            System.out.println("Postfix: " + convert.getPostfix());
-            System.out.println("Value: " + convert.evalValue(convert.getPostfix()));
+            System.out.println("Postfix: " + result);
+            System.out.println("Value: " + convert.evalValue(result));
         } else {
             System.out.println("Missing Parenthesis!");
         }
