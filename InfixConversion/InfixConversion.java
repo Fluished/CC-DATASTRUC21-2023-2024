@@ -2,50 +2,13 @@
 
 import java.util.*;
 
-class InfixConversion {
-    public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
-
-        // (2 - 4 / 4 ) * (8 / 2 - 3)
-        // (6 - 4 + 2) / 1 * (10/5+(4*1))
-
-        String infix = "10 / (3 + 2)";
-        System.out.println("Enter equation: " + infix);
-        // String infix = scan.nextLine();
-
-        infix = infix.replaceAll(" ", "");
-
-        if (checkParenthesis(infix) == true) {
-            Conversion convert = new Conversion(infix);
-
-            System.out.println("Postfix: " + convert.getPostfix());
-            System.out.println("Value: " + convert.evalValue(convert.getPostfix()));
-        } else {
-            System.out.println("Missing Parenthesis!");
-        }
-
-        scan.close();
-    }
-
-    private static boolean checkParenthesis(String infix) {
-        int parenthesisCnt = 0;
-
-        for (int i = 0; i < infix.length(); i++) {
-            if (infix.charAt(i) == '(' || infix.charAt(i) == ')') {
-                parenthesisCnt++;
-            }
-        }
-
-        return parenthesisCnt % 2 == 0;
-    }
-}
-
 class Conversion {
+
+    private String infix;
+
     Conversion(String infix) {
         this.infix = infix;
     }
-
-    String infix;
 
     public String getPostfix() {
         StringBuilder result = new StringBuilder();
@@ -55,10 +18,14 @@ class Conversion {
             StringBuilder multiDigit = new StringBuilder();
             char c = infix.charAt(i);
 
-            if (Character.isDigit(c)) {
-                while (i < infix.length() && Character.isDigit(infix.charAt(i))) {
+            if (Character.isDigit(c) || c == '-') {
+                while (i < infix.length() && infix.charAt(i) == '-' || Character.isDigit(infix.charAt(i))) {
                     multiDigit.append(infix.charAt(i));
                     i++;
+
+                    if (i == infix.length()) {
+                        break;
+                    }
                 }
                 result.append(multiDigit).append(" ");
                 i--;
@@ -160,5 +127,42 @@ class Conversion {
             }
         }
         return false;
+    }
+}
+
+class InfixConversion {
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+
+        // (2 - 4 / 4 ) * (8 / 2 - 3)
+        // (6 - 4 + 2) / 1 * (10/5+(4*1))
+
+        System.out.print("Enter equation: ");
+        String infix = scan.nextLine();
+
+        infix = infix.replaceAll(" ", "");
+
+        if (checkParenthesis(infix) == true) {
+            Conversion convert = new Conversion(infix);
+
+            System.out.println("Postfix: " + convert.getPostfix());
+            System.out.println("Value: " + convert.evalValue(convert.getPostfix()));
+        } else {
+            System.out.println("Missing Parenthesis!");
+        }
+
+        scan.close();
+    }
+
+    private static boolean checkParenthesis(String infix) {
+        int parenthesisCnt = 0;
+
+        for (int i = 0; i < infix.length(); i++) {
+            if (infix.charAt(i) == '(' || infix.charAt(i) == ')') {
+                parenthesisCnt++;
+            }
+        }
+
+        return parenthesisCnt % 2 == 0;
     }
 }
