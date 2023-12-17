@@ -150,7 +150,7 @@ class InfixConversion {
         // String infix = "(-5+-1)*1";
         // System.out.printf("Enter equation: %s\n", infix);
 
-        System.out.println("Please use \"-1 + -1\" or \"-1 - -1\" fornegativeintegers");
+        System.out.println("Please use \"-1 + -1\" or \"-1 - -1\" for negative integers");
         System.out.print("Enter equation: ");
         String infix = scan.nextLine();
 
